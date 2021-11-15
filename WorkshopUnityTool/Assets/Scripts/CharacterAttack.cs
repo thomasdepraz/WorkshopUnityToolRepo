@@ -5,8 +5,9 @@ using UnityEngine;
 public class CharacterAttack : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] Transform self;
-    [SerializeField] List<Bullet> bullets = new List<Bullet>();
+    [SerializeField] public Transform self;
+    [SerializeField] public GameObject bulletPrefab;
+    [SerializeField] public List<Bullet> bullets = new List<Bullet>();
 
     // Start is called before the first frame update
     void Start()

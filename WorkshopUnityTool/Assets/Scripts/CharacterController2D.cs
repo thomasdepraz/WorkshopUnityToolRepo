@@ -38,6 +38,7 @@ public class CharacterController2D : MonoBehaviour
 
         if (Input.GetKeyDown(fire))
             attack.Shoot((Vector2)self.up);
+
     }
 
 

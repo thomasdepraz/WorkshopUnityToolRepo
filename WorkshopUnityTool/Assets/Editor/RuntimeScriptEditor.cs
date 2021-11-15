@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(MyRuntimeScript))]
+//[CustomEditor(typeof(MyRuntimeScript))]
 public class RuntimeScriptEditor : Editor
 {
     MyRuntimeScript _target;
@@ -23,7 +23,7 @@ public class RuntimeScriptEditor : Editor
 
         EditorGUILayout.LabelField("TITLE", style, GUILayout.MinHeight(50));
 
-        _target.self = (Transform)EditorGUILayout.ObjectField("Self", _target.self, typeof(Transform), true);
+        _target._transform = (Transform)EditorGUILayout.ObjectField("Self", _target._transform, typeof(Transform), true);
         _target.someColor = EditorGUILayout.ColorField("Some Color", _target.someColor);
 
         EditorGUI.BeginChangeCheck();
