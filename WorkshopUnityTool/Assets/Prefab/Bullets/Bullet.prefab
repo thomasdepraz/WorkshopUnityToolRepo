@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 7248349156623815291}
   - component: {fileID: 7248349156623815268}
   - component: {fileID: 7248349156623815269}
-  m_Layer: 0
+  - component: {fileID: 2285990802443933097}
+  m_Layer: 9
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,6 +97,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
+  enemyLayerMasks:
+    serializedVersion: 2
+    m_Bits: 640
+  playerLayerMasks:
+    serializedVersion: 2
+    m_Bits: 384
+  isEnemyBullet: 0
   self: {fileID: 7248349156623815291}
   direction: {x: 0, y: 0}
   isActive: 0
+--- !u!58 &2285990802443933097
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7248349156623815290}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5

@@ -189,6 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   self: {fileID: 5268373432309847254}
+  profile: {fileID: 0}
 --- !u!1 &5268373432516085329
 GameObject:
   m_ObjectHideFlags: 0

@@ -75,5 +75,11 @@ public class CharacterController2D : MonoBehaviour
         //Tilt object based on movement;
 
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //GameOver
+
+    }
 }
 

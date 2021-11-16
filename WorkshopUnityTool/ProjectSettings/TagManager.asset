@@ -12,9 +12,9 @@ TagManager:
   - Water
   - UI
   - ChunkTrigger
-  - 
-  - 
-  - 
+  - Obstacle
+  - Enemy
+  - Player
   - 
   - 
   - 

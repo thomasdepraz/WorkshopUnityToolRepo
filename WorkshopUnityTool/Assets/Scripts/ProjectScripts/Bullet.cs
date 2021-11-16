@@ -7,6 +7,9 @@ public class Bullet : MonoBehaviour
 {
     [Header("Data")]
     public float speed;
+    public LayerMask enemyLayerMasks;
+    public LayerMask playerLayerMasks;
+    public bool isEnemyBullet;
 
     [Header("References")]
     public Transform self;
@@ -14,6 +17,18 @@ public class Bullet : MonoBehaviour
     //Hidden Variables
     [HideInInspector] public Vector2 direction;
     [HideInInspector] public bool isActive;
+    private ContactFilter2D contactFilter;
+    private RaycastHit2D[] hits = new RaycastHit2D[1];
+
+    public void Start()
+    {
+        if (isEnemyBullet)
+            contactFilter.layerMask = enemyLayerMasks;
+        else
+            contactFilter.layerMask = playerLayerMasks;
+
+        contactFilter.useLayerMask = true;
+    }
 
     public void Shoot(Vector2 dir, Transform origin)
     {
@@ -28,7 +43,9 @@ public class Bullet : MonoBehaviour
         self.Translate(direction * speed * Time.deltaTime);
 
         if (Collision() && gameObject.activeSelf)
+        {
             ResetBullet();
+        }
     }
 
     public void ResetBullet()
@@ -40,7 +57,14 @@ public class Bullet : MonoBehaviour
 
     public bool Collision()
     {
-        return false;
+        if (Physics2D.Raycast(self.localPosition, direction, contactFilter, hits, speed * Time.deltaTime)> 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void DestroyFeedback()
