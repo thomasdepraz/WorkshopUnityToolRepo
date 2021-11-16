@@ -35,10 +35,6 @@ public class CharacterController2D : MonoBehaviour
     void Update()
     {
         Move();
-
-        if (Input.GetKeyDown(fire))
-            attack.Shoot((Vector2)self.up);
-
     }
 
 

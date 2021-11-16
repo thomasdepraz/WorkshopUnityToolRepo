@@ -4,15 +4,14 @@ using UnityEditor;
 using UnityEngine;
 
 [CanEditMultipleObjects]
-[CustomEditor(typeof(CharacterAttack))]
+//[CustomEditor(typeof(CharacterAttack))]
 public class CharacterAttackInspector : Editor
 {
     CharacterAttack script;
     SerializedProperty selfTransform;
     SerializedProperty bulletPrefab;
     SerializedProperty bullets;
-    public SerializedProperty count;
-    public int _count;
+    SerializedProperty count;
 
 
     public GUIStyle titleStyle;
@@ -26,10 +25,8 @@ public class CharacterAttackInspector : Editor
         script = target as CharacterAttack;
         selfTransform = serializedObject.FindProperty(nameof(script.self));
         bulletPrefab = serializedObject.FindProperty(nameof(script.bulletPrefab));
-        bullets = serializedObject.FindProperty(nameof(script.bullets));
-
-        SerializedObject so = new SerializedObject(this);
-        count = so.FindProperty("_count"); 
+        //bullets = serializedObject.FindProperty(nameof(script.bullets));
+        count = serializedObject.FindProperty(nameof(script.count)); 
     }
 
     public override void OnInspectorGUI()
@@ -54,7 +51,6 @@ public class CharacterAttackInspector : Editor
 
         EditorGUILayout.PropertyField(selfTransform);
         EditorGUILayout.PropertyField(bulletPrefab);
-        EditorGUILayout.PropertyField(count);
 
         #region BulletPool
         EditorGUILayout.LabelField("Bullet Pool", titleStyle, GUILayout.MinHeight(40));
@@ -62,7 +58,11 @@ public class CharacterAttackInspector : Editor
 
         bool add = GUILayout.Button("+");
         bool remove = GUILayout.Button("-");
-        if(add && count.intValue > 0)
+        EditorGUILayout.PropertyField(count);
+        if (count.intValue < 0)
+            count.intValue = 0;
+
+        if (add && count.intValue > 0)
         {
             //Instantiate objects
             if (bulletPoolParent == null)
@@ -72,8 +72,8 @@ public class CharacterAttackInspector : Editor
             {
                 GameObject go = Instantiate(bulletPrefab.objectReferenceValue as GameObject, bulletPoolParent.transform);
                 Bullet curBullet = go.GetComponent<Bullet>();
-                curBullet.originTransform = selfTransform.objectReferenceValue as Transform;
-                script.bullets.Add(curBullet);
+                //curBullet.originTransform = selfTransform.objectReferenceValue as Transform;
+                //script.bullets.Add(curBullet);
             }
         }
         if(remove && count.intValue > 0)
@@ -81,8 +81,8 @@ public class CharacterAttackInspector : Editor
             //Remove/Destroy objects
             for (int i = 0; i < count.intValue; i++)
             {
-                DestroyImmediate(script.bullets[script.bullets.Count - 1].gameObject);
-                script.bullets.RemoveAt(script.bullets.Count - 1);
+                //DestroyImmediate(script.bullets[script.bullets.Count - 1].gameObject);
+                //script.bullets.RemoveAt(script.bullets.Count - 1);
             }
         }
 
@@ -90,14 +90,16 @@ public class CharacterAttackInspector : Editor
 
         if (GUILayout.Button("Clear"))
         {
+            bullets.ClearArray();
+
             if(bulletPoolParent != null)
                 DestroyImmediate(bulletPoolParent.gameObject);
         }
 
-        if(script.bullets.Count == 0)
-        {
+        //if(script.bullets.Count == 0)
+        //{
             //Draw Error
-        }
+        //}
        
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.PropertyField(bullets);
@@ -105,5 +107,4 @@ public class CharacterAttackInspector : Editor
 
         serializedObject.ApplyModifiedProperties();
     }
-
 }

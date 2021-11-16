@@ -10,18 +10,22 @@ public class Bullet : MonoBehaviour
 
     [Header("References")]
     public Transform self;
-    public Transform originTransform;
 
     //Hidden Variables
     [HideInInspector] public Vector2 direction;
     [HideInInspector] public bool isActive;
 
+    public void Shoot(Vector2 dir, Transform origin)
+    {
+        direction = dir;
+        self.position = origin.position;
+        gameObject.SetActive(true);
+    }
 
     private void Update()
     {
         //MoveBullet
         self.Translate(direction * speed * Time.deltaTime);
-        print(direction);
 
         if (Collision() && gameObject.activeSelf)
             ResetBullet();
@@ -30,7 +34,6 @@ public class Bullet : MonoBehaviour
     public void ResetBullet()
     {
         gameObject.SetActive(false);
-        self.position = originTransform.position;
         direction = Vector2.zero;
         DestroyFeedback();
     }
