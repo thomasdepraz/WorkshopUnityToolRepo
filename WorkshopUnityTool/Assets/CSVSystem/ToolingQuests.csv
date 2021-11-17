@@ -1,0 +1,10 @@
+Index	Nom quête	Initulé complet	Valeur challenge	Valeur reward	Type Reward	Type Challenge
+0		Termine le niveau en moins de $number secondes.	30	10	Score	Speed
+1		Tue $number ennemis.	5	20	Score	Kill
+2		Termine le niveau en moins de $number secondes.	15	30	Score	Speed
+3		Tue $number ennemis.	10	40	Score	Kill
+4		Termine le niveau en moins de $number secondes.	10	50	Score	Speed
+5		Tue $number ennemis.	20	60	Score	Kill
+6		Termine le niveau en moins de $number secondes.	8	70	Score	Speed
+7		Tue $number ennemis.	30	80	Score	Kill
+8		Termine le niveau en moins de $number secondes.	5	90	Score	Speed

@@ -8,11 +8,16 @@ public class BulletPoolManager : MonoBehaviour
     public Transform self;
     public List<Bullet> bullets = new List<Bullet>();
     public GameObject bulletPrefab;
+    public ParticleSystem destroyParticle;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        //init particles on bullets
+        for (int i = 0; i < bullets.Count; i++)
+        {
+            bullets[i].destroyParticle = destroyParticle;
+        }
     }
     
     public Bullet GetFreeElement()
@@ -35,6 +40,7 @@ public class BulletPoolManager : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, self);
         Bullet b = bullet.GetComponent<Bullet>();
         if (!b) b = bullet.AddComponent<Bullet>();
+        b.destroyParticle = destroyParticle;
         return b;
     }
 }

@@ -19,6 +19,8 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] Transform self;
     [SerializeField] Transform graphTransfrom;
     [SerializeField] CharacterAttack attack;
+    [SerializeField] ParticleSystem deathParticles;
+    [SerializeField] Camera mainCam;
 
     private Vector2 movement;
     private Vector2 lastMovement;
@@ -35,6 +37,7 @@ public class CharacterController2D : MonoBehaviour
     void Update()
     {
         Move();
+
     }
 
 
@@ -72,14 +75,21 @@ public class CharacterController2D : MonoBehaviour
         //Get last movement value
         lastMovement = new Vector2(movement.x, movement.y);
 
-        //Tilt object based on movement;
 
+        //Tilt object based on movement;
+        Vector3 mousPos = mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,10));
+
+        graphTransfrom.up = mousPos - self.position;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //GameOver
+        deathParticles.transform.position = self.position;
+        deathParticles.Play();
+        gameObject.SetActive(false);
 
+        //Restart the game somehow
     }
 }
 

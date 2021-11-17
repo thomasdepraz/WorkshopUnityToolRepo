@@ -13,6 +13,8 @@ public class Bullet : MonoBehaviour
 
     [Header("References")]
     public Transform self;
+    public Screenshake destroyShake;
+    public ParticleSystem destroyParticle;
 
     //Hidden Variables
     [HideInInspector] public Vector2 direction;
@@ -42,17 +44,17 @@ public class Bullet : MonoBehaviour
         //MoveBullet
         self.Translate(direction * speed * Time.deltaTime);
 
-        if (Collision() && gameObject.activeSelf)
-        {
-            ResetBullet();
-        }
+        //if (Collision() && gameObject.activeSelf)
+        //{
+        //    ResetBullet();
+        //}
     }
 
     public void ResetBullet()
     {
-        gameObject.SetActive(false);
-        direction = Vector2.zero;
         DestroyFeedback();
+        direction = Vector2.zero;
+        gameObject.SetActive(false);
     }
 
     public bool Collision()
@@ -69,10 +71,23 @@ public class Bullet : MonoBehaviour
 
     public void DestroyFeedback()
     {
+        //Particles
+        destroyParticle.transform.position = self.position;
+        destroyParticle.Play();
 
+        //Screenshake if available
+        if(destroyShake != null)
+        {
+            destroyShake.trauma += 0.3f;
+        }
     }
 
     public void OnBecameInvisible()//The bullet exits the screen
+    {
+        ResetBullet();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         ResetBullet();
     }
