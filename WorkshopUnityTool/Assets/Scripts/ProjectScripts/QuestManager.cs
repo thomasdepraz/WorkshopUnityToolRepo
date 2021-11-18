@@ -41,7 +41,7 @@ public class QuestManager : MonoBehaviour
             UpdateQuests();
     }
 
-    void UpdateQuests()
+    public void UpdateQuests()
     {
         List<Quest> clearList = new List<Quest>();
         for (int i = 0; i < currentQuests.Count; i++)
@@ -99,7 +99,7 @@ public class QuestManager : MonoBehaviour
                 break;
 
             case ChallengeType.Speed:
-                if(GameManager.Instance.currentLevelTimer < (float)quest.challengeValue)
+                if(GameManager.Instance.levelManager.levelTimer < (float)quest.challengeValue)
                 {
                     return true;
                 }

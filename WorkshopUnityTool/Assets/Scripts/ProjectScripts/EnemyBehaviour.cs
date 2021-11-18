@@ -56,5 +56,6 @@ public class EnemyBehaviour : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         gameObject.SetActive(false);
+        GameManager.Instance.currentkillCount++;
     }
 }

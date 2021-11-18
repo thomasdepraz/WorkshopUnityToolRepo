@@ -36,6 +36,13 @@ public class ChunkEditorWindow : EditorWindow
     //Update
     private void OnGUI()
     {
+        if (serializedObject == null)
+        {
+            EditorWindow w = EditorWindow.GetWindow(typeof(ChunkEditorWindow));
+            w.Close();
+        }
+
+
         ProcessEvent();
         serializedObject.Update();
         heightProp.intValue = 9;
@@ -45,6 +52,8 @@ public class ChunkEditorWindow : EditorWindow
 
         if(colorsProp.arraySize != enumLength)
             colorsProp.arraySize = enumLength;
+
+        EditorGUILayout.PropertyField(tilesProp);
 
         #region Top Disabled GUI
         EditorGUI.BeginDisabledGroup(true);
@@ -66,13 +75,25 @@ public class ChunkEditorWindow : EditorWindow
         for (int i = 0; i < enumLength; i++)
         {
             EditorGUILayout.BeginVertical();
-            //GUI.backgroundColor = colorsProp.GetArrayElementAtIndex(i).colorValue;
-            //if(currentTileSelected.enumValueIndex.)
+            if((i == (int)TileType.LevelFinish && disableGoalButton) || (i == (int)TileType.PlayerSpawner && disablePlayerButton))
+            {
+                EditorGUI.BeginDisabledGroup(true);
                 if (GUILayout.Button(Enum.GetName(typeof(TileType), i)))
                 {
                     currentTileSelected.enumValueIndex = i;
                 }
-            colorsProp.GetArrayElementAtIndex(i).colorValue = EditorGUILayout.ColorField(colorsProp.GetArrayElementAtIndex(i).colorValue); 
+                colorsProp.GetArrayElementAtIndex(i).colorValue = EditorGUILayout.ColorField(colorsProp.GetArrayElementAtIndex(i).colorValue);
+                EditorGUI.EndDisabledGroup();
+            }
+            else
+            {
+                if (GUILayout.Button(Enum.GetName(typeof(TileType), i)))
+                {
+                    currentTileSelected.enumValueIndex = i;
+                }
+                colorsProp.GetArrayElementAtIndex(i).colorValue = EditorGUILayout.ColorField(colorsProp.GetArrayElementAtIndex(i).colorValue);
+            }
+            
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(5);
         }
@@ -83,9 +104,12 @@ public class ChunkEditorWindow : EditorWindow
 
         float totalWidth = EditorGUIUtility.currentViewWidth;
         float gridWidth = totalWidth * (1f - 2f * marginRatio);
+        GUILayout.Space(20);
         Rect nextRect = EditorGUILayout.GetControlRect();
 
+        Rect backGroundArea = new Rect(nextRect.x + totalWidth * marginRatio - 10 , nextRect.y -10, gridWidth + 20, gridWidth / 1.89f + 20);
         Rect area = new Rect(nextRect.x + totalWidth * marginRatio, nextRect.y, gridWidth, gridWidth / 1.89f);
+        EditorGUI.DrawRect(backGroundArea, colorsProp.GetArrayElementAtIndex(currentTileSelected.enumValueIndex).colorValue);
         EditorGUI.DrawRect(area, Color.gray);
 
         EditorUtility.SetDirty(currentChunk);
@@ -104,17 +128,17 @@ public class ChunkEditorWindow : EditorWindow
         float spaceWidth = totalSpaceWitdh / ((float)widthProp.intValue + 1);
         float curY = area.y + spaceWidth;
 
-        for (int i = 0; i < heightProp.intValue; i++)
+        for (int y = 0; y < heightProp.intValue; y++)
         {
             float curX =  area.x;
-            for (int j = 0; j < widthProp.intValue; j++)
+            for (int x = 0; x < widthProp.intValue; x++)
             {
                 curX += spaceWidth;
                 
                 Rect rect = new Rect(curX, curY, cellWidth, cellWidth);
                 curX += cellWidth;
 
-                int tileIndex = j * heightProp.intValue + i;
+                int tileIndex = y * widthProp.intValue + x;
 
 
                 bool isPaintingOverThis = isMouseDown && rect.Contains(Event.current.mousePosition);
@@ -134,6 +158,10 @@ public class ChunkEditorWindow : EditorWindow
         }
         #endregion
         GUILayout.Space(area.height + 10);
+
+        disableGoalButton = GoalAlreadyDefined();
+        disablePlayerButton = PlayerAlreadyDefined();
+
         #region Buttons
         if (GUILayout.Button("Clear"))
         {
@@ -144,6 +172,18 @@ public class ChunkEditorWindow : EditorWindow
         }
         #endregion
 
+        #region Errors
+        if(!disableGoalButton)
+        {
+            //EditorGUILayout.HelpBox("Level needs one LevelFinish to be saved", MessageType.Warning);
+        }
+        if(!disablePlayerButton)
+        {
+            //EditorGUILayout.HelpBox("Level needs one PlayerSpawner to be saved", MessageType.Warning);
+        }
+        #endregion
+
+
         serializedObject.ApplyModifiedProperties();
         Repaint();
     }
@@ -152,11 +192,13 @@ public class ChunkEditorWindow : EditorWindow
     {
         for (int i = 0; i < tilesProp.arraySize; i++)
         {
-
             if (tilesProp.GetArrayElementAtIndex(i).enumValueIndex == (int)TileType.LevelFinish)
             {
                 if(currentTileSelected.enumValueIndex == (int)TileType.LevelFinish)
+                {
+                    isMouseDown = false;
                     currentTileSelected.enumValueIndex = (int)TileType.None;
+                }
 
                 return true;
             }
@@ -171,15 +213,16 @@ public class ChunkEditorWindow : EditorWindow
             if (tilesProp.GetArrayElementAtIndex(i).enumValueIndex == (int)TileType.PlayerSpawner)
             {
                 if (currentTileSelected.enumValueIndex == (int)TileType.PlayerSpawner)
+                {
+                    isMouseDown = false;
                     currentTileSelected.enumValueIndex = (int)TileType.None;
+                }
 
                 return true;
             }
         }
         return false;
     }
-
-
 
     void ProcessEvent()
     {

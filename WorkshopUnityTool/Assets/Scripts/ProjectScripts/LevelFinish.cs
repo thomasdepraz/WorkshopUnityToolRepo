@@ -9,8 +9,10 @@ public class LevelFinish : MonoBehaviour
         //FinishedLevel
         print("LevelFInished");
 
-        //Update quest 
-         
+        //Update quest
+        GameManager.Instance.questManager.UpdateQuests();
+
         //Load NextLevel (+ move player) 
+        GameManager.Instance.levelManager.LoadNextLevel();
     }
 }

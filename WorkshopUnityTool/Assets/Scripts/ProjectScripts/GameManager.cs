@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,13 +13,24 @@ public class GameManager : MonoBehaviour
     public MenuManager menuManager;
     public QuestManager questManager;
     public CharacterController2D playerController;
+    public LevelManager levelManager;
 
     [Header("Feedback References")]
     public Screenshake shake;
     public Screenshake knockbackShake;
+    public TextMeshProUGUI killCountText;
+    public TextMeshProUGUI timerText;
 
-    [HideInInspector] public int currentkillCount;
-    [HideInInspector] public float currentLevelTimer;
+    int _currentkillCount = 0;
+    [HideInInspector] public int currentkillCount
+    {
+        get => _currentkillCount;
+        set
+        {
+            _currentkillCount = value;
+            killCountText.text = "KillCount : " + _currentkillCount.ToString();
+        }
+    }
     public int score;
 
     //prvate variables
