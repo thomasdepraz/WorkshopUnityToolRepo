@@ -72,8 +72,11 @@ public class Bullet : MonoBehaviour
     public void DestroyFeedback()
     {
         //Particles
-        destroyParticle.transform.position = self.position;
-        destroyParticle.Play();
+        if(destroyParticle!=null)
+        {
+            destroyParticle.transform.position = self.position;
+            destroyParticle.Play();
+        }
 
         //Screenshake if available
         if(destroyShake != null)

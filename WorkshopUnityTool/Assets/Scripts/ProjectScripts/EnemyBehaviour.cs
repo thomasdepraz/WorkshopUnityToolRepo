@@ -29,6 +29,12 @@ public class EnemyBehaviour : MonoBehaviour
     {
         Move();
         Shoot();
+
+        //Get fire dir + look at
+        fireDir = playerTransform.position - self.position;
+        fireDir = Quaternion.Euler(new Vector3(0, 0, Random.Range(-fireSpread, fireSpread))) * fireDir;
+        fireDir.Normalize();
+        self.up = Vector3.Lerp(self.up, (Vector3)fireDir, Time.deltaTime);
     }
 
     void Move()
@@ -41,11 +47,6 @@ public class EnemyBehaviour : MonoBehaviour
         fireRateTimer += Time.deltaTime;
         if(fireRateTimer >= fireRate)
         {
-            //Shoot from enemy pool
-            fireDir = playerTransform.position - self.position;
-            fireDir = Quaternion.Euler(new Vector3(0, 0, Random.Range(-fireSpread, fireSpread))) * fireDir;
-            fireDir.Normalize();
-
             enemyBulletPool.GetFreeElement().Shoot(fireDir, self);
 
             fireRateTimer = 0;

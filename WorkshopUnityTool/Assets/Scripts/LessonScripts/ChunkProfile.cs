@@ -6,8 +6,9 @@ public enum TileType
 {
     None, 
     Obstacle, 
-    Pickup, 
-    Enemy
+    Enemy, 
+    PlayerSpawner,
+    LevelFinish,
 }
 
 
