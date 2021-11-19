@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    [Header("References")]
     public List<ChunkProfile> chunkPool = new List<ChunkProfile>();
     public ObjectPool obstaclePool;
     public ObjectPool enemyPool;

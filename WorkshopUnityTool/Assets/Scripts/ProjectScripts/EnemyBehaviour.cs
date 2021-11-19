@@ -10,8 +10,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     [Header("References")]
     public Transform self;
-    public BulletPoolManager enemyBulletPool;
-    public Transform playerTransform;
+    private BulletPoolManager enemyBulletPool;
+    private Transform playerTransform;
 
 
     //Private variables 
@@ -31,7 +31,7 @@ public class EnemyBehaviour : MonoBehaviour
         Shoot();
 
         //Get fire dir + look at
-        fireDir = playerTransform.position - self.position;
+        fireDir = GameManager.Instance.playerController.self.position - self.position;
         fireDir = Quaternion.Euler(new Vector3(0, 0, Random.Range(-fireSpread, fireSpread))) * fireDir;
         fireDir.Normalize();
         self.up = Vector3.Lerp(self.up, (Vector3)fireDir, Time.deltaTime);
@@ -47,7 +47,7 @@ public class EnemyBehaviour : MonoBehaviour
         fireRateTimer += Time.deltaTime;
         if(fireRateTimer >= fireRate)
         {
-            enemyBulletPool.GetFreeElement().Shoot(fireDir, self);
+            GameManager.Instance.enemyBullets.GetFreeElement().Shoot(fireDir, self);
 
             fireRateTimer = 0;
         }

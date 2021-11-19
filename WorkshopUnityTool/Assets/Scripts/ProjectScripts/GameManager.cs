@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public QuestManager questManager;
     public CharacterController2D playerController;
     public LevelManager levelManager;
+    public BulletPoolManager enemyBullets;
 
     [Header("Feedback References")]
     public Screenshake shake;
@@ -48,6 +49,45 @@ public class GameManager : MonoBehaviour
             Instance = this;
     }
 
+    private void Update()
+    {
+        if(Input.GetMouseButton(1))
+        {
+            timer += Time.deltaTime;
+            if (timer >= 2) timer = 2;
+
+            if(timer < 2 && slowMotion == null)
+            {
+                slowMotion = StartCoroutine(SlowMotion(0.5f, 3, 1, 1));
+            }
+            if(timer >= 2 && slowMotion!=null)
+            {
+                StopCoroutine(slowMotion);
+                StartCoroutine(SlowMotion(1, 3, 1, 1));
+                slowMotion = null;
+            }
+        }
+        else
+        {
+            timer -= Time.deltaTime;
+            if (timer < 0) timer = 0;
+
+            print(timer);
+        }
+        if(Input.GetMouseButtonUp(1))
+        {
+            if(timer < 2)
+            {
+                if(slowMotion != null)
+                {
+                    StopCoroutine(slowMotion);
+                    StartCoroutine(SlowMotion(1, 3, 1, 1));
+                }
+                slowMotion = null;
+            }
+            
+        }
+    }
     private IEnumerator SlowMotion(float targetSpeed, float duration, float easeInSpeed, float easeOutSpeed)
     {
         slowMoTimer = 0;
@@ -60,7 +100,7 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = targetSpeed;
 
-        yield return new WaitForSecondsRealtime(duration);
+        /*yield return new WaitForSecondsRealtime(duration);
 
         slowMoTimer = 0;
         while (Time.timeScale <= 1)
@@ -71,6 +111,6 @@ public class GameManager : MonoBehaviour
         }
 
         slowMoTimer = 0;
-        Time.timeScale = 1;
+        Time.timeScale = 1; */
     }
 }

@@ -5,10 +5,12 @@ using UnityEditor;
 using UnityEngine;
 public class ChunkEditorWindow : EditorWindow
 {
+    LevelManager currentLevelManager;
     ChunkProfile currentChunk;
     SerializedProperty widthProp, heightProp, tilesProp, colorsProp, currentTileSelected;
     SerializedObject serializedObject;
 
+    public string tempPath;
 
     bool isMouseDown;
     float marginRatio;
@@ -17,8 +19,9 @@ public class ChunkEditorWindow : EditorWindow
     bool disablePlayerButton;
 
     //Start
-    public void InitWindow(ChunkProfile chunk)
+    public void InitWindow(ChunkProfile chunk, LevelManager levelManager = null)
     {
+        currentLevelManager = levelManager;
         currentChunk = chunk;
         serializedObject = new SerializedObject(currentChunk);
         isMouseDown = false;
@@ -31,6 +34,7 @@ public class ChunkEditorWindow : EditorWindow
         colorsProp = serializedObject.FindProperty(nameof(currentChunk.tileColors));
         currentTileSelected = serializedObject.FindProperty(nameof(currentChunk.currentTile));
 
+        colorsProp.arraySize = enumLength;
     }
 
     //Update
@@ -50,8 +54,30 @@ public class ChunkEditorWindow : EditorWindow
         if (tilesProp.arraySize != 161)
             tilesProp.arraySize = 161;
 
+        //Color hard set
         if(colorsProp.arraySize != enumLength)
+        {
             colorsProp.arraySize = enumLength;
+            for (int i = 0; i < colorsProp.arraySize; i++)
+            {
+                switch(i)
+                {
+                    case 0: colorsProp.GetArrayElementAtIndex(0).colorValue = Color.black; break;
+
+                    case 1: colorsProp.GetArrayElementAtIndex(1).colorValue = Color.yellow; break;
+
+                    case 2: colorsProp.GetArrayElementAtIndex(2).colorValue = Color.red; break;
+
+                    case 3: colorsProp.GetArrayElementAtIndex(3).colorValue = Color.white ; break;
+
+                    case 4: colorsProp.GetArrayElementAtIndex(4).colorValue = Color.cyan; break;
+
+                    default:
+                        break;
+                }
+
+            }
+        }
 
         EditorGUILayout.PropertyField(tilesProp);
 
@@ -91,7 +117,7 @@ public class ChunkEditorWindow : EditorWindow
                 {
                     currentTileSelected.enumValueIndex = i;
                 }
-                colorsProp.GetArrayElementAtIndex(i).colorValue = EditorGUILayout.ColorField(colorsProp.GetArrayElementAtIndex(i).colorValue);
+               colorsProp.GetArrayElementAtIndex(i).colorValue = EditorGUILayout.ColorField(colorsProp.GetArrayElementAtIndex(i).colorValue);
             }
             
             EditorGUILayout.EndVertical();
@@ -115,12 +141,14 @@ public class ChunkEditorWindow : EditorWindow
         EditorUtility.SetDirty(currentChunk);
 
         serializedObject.ApplyModifiedProperties();
+
         //if (nextRect.y == 0) return;
         if (heightProp.intValue < 0) return;
         if (widthProp.intValue < 0) return;
         serializedObject.Update();
 
         #region GridArea
+ 
         float cellToSpaceRatio = 4f;
         float totalCellWidth = gridWidth * (cellToSpaceRatio)/(cellToSpaceRatio + 1f);
         float cellWidth = totalCellWidth / (float)widthProp.intValue;
@@ -156,32 +184,49 @@ public class ChunkEditorWindow : EditorWindow
             curY += cellWidth;
             curY += spaceWidth;
         }
+ 
         #endregion
+
         GUILayout.Space(area.height + 10);
 
-        disableGoalButton = GoalAlreadyDefined();
-        disablePlayerButton = PlayerAlreadyDefined();
+        if(nextRect.y !=0)
+        {
+            disableGoalButton = GoalAlreadyDefined();
+            disablePlayerButton = PlayerAlreadyDefined();
+        }
+
+        #region Errors
+        if (!disableGoalButton)
+        {
+            EditorGUILayout.HelpBox("Level needs one LevelFinish to be saved", MessageType.Warning);
+        }
+        if (!disablePlayerButton)
+        {
+            EditorGUILayout.HelpBox("Level needs one PlayerSpawner to be saved", MessageType.Warning);
+        }
+        #endregion
 
         #region Buttons
-        if (GUILayout.Button("Clear"))
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Clear", GUILayout.MaxWidth(60)))
         {
             for (int i = 0; i < tilesProp.arraySize; i++)
             {
                 tilesProp.GetArrayElementAtIndex(i).enumValueIndex = (int)TileType.None;
             }
+
         }
+        if (disableGoalButton && disablePlayerButton && !currentChunk.saved)
+        {
+            if (GUILayout.Button("Save", GUILayout.MaxWidth(60)))
+            {
+                if (!currentChunk.saved)
+                    Save();
+            }
+        }
+        EditorGUILayout.EndHorizontal();
         #endregion
 
-        #region Errors
-        if(!disableGoalButton)
-        {
-            //EditorGUILayout.HelpBox("Level needs one LevelFinish to be saved", MessageType.Warning);
-        }
-        if(!disablePlayerButton)
-        {
-            //EditorGUILayout.HelpBox("Level needs one PlayerSpawner to be saved", MessageType.Warning);
-        }
-        #endregion
 
 
         serializedObject.ApplyModifiedProperties();
@@ -233,6 +278,51 @@ public class ChunkEditorWindow : EditorWindow
         if (Event.current.type == EventType.MouseUp)
         {
             isMouseDown = false;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if(!IsLevelValid() && !currentChunk.saved)
+        {
+            //Destroy the asset at temp path
+            AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(currentChunk));
+            AssetDatabase.SaveAssets();
+        }
+        else
+        {
+            //Save asset to fianl path and add it to levelManagerList
+            if(!currentChunk.saved)
+                Save();
+        }
+    }
+
+    bool IsLevelValid()
+    {
+        if (disableGoalButton && disablePlayerButton)
+            return true;
+        else
+            return false;
+    }
+
+    void Save()
+    {
+        //Save asset to final Path
+        string path = EditorUtility.SaveFilePanelInProject("Save file", "LevelDesign_", "asset", "");
+        AssetDatabase.MoveAsset(AssetDatabase.GetAssetPath(currentChunk), path);
+        AssetDatabase.SaveAssets();
+        currentChunk.saved = true;
+        EditorUtility.SetDirty(currentChunk);
+
+        //add To level ManagerPool if needed
+        if(currentLevelManager!= null && !currentLevelManager.chunkPool.Contains(currentChunk))
+        {
+            currentLevelManager.chunkPool.Add(currentChunk);
+
+            EditorGUIUtility.PingObject(currentLevelManager);
+
+            //close window
+            Close();
         }
     }
 }

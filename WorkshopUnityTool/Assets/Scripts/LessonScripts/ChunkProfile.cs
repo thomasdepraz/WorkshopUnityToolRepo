@@ -20,6 +20,7 @@ public class ChunkProfile : ScriptableObject
 #if UNITY_EDITOR
     public Color[] tileColors;
     public TileType currentTile;
+    public bool saved;
 #endif
     public TileType[] tiles;
 }

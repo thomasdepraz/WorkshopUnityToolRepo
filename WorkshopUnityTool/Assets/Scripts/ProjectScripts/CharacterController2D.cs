@@ -16,7 +16,7 @@ public class CharacterController2D : MonoBehaviour
 
 
     [Header("References")]
-    [SerializeField] Transform self;
+    [SerializeField] public Transform self;
     [SerializeField] Transform graphTransfrom;
     [SerializeField] CharacterAttack attack;
     [SerializeField] ParticleSystem deathParticles;
