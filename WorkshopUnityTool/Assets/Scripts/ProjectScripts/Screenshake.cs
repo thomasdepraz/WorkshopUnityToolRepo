@@ -27,8 +27,14 @@ public class Screenshake : MonoBehaviour
     float _FadeOut = 1f;
 
     public float trauma;
+
+    [Tooltip("Maximum trauma that this screenshake can reach. The higher the value, the more nuanced the screenshake can be.")]
     public float maxTrauma;
+
+    [Range(0.1f, 3f)]
+    [Tooltip("How fast will the current trauma will drop back to zero. e.g : if trauma = 1 and this = 2 then it will take 0.5 seconds.")]
     public float traumaDecreaseSpeed;
+    
     public float rotationalSpread;
     public bool timeBased;
     public bool rotational;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -21,6 +22,8 @@ public class GameManager : MonoBehaviour
     public Screenshake knockbackShake;
     public TextMeshProUGUI killCountText;
     public TextMeshProUGUI timerText;
+    public TextMeshProUGUI scoreText;
+    public Image slowMotionFillBar;
 
     int _currentkillCount = 0;
     [HideInInspector] public int currentkillCount
@@ -32,12 +35,18 @@ public class GameManager : MonoBehaviour
             killCountText.text = "KillCount : " + _currentkillCount.ToString();
         }
     }
-    public int score;
+    int _score = 0;
+    [HideInInspector]public int score
+    {
+        get => _score;
+        set
+        {
+            _score = value;
+            scoreText.text = "Score : " + _score.ToString();
+        }
+    }
 
-    //prvate variables
-    private float timer;
-    private float slowMoTimer = 0;
-    private Coroutine slowMotion;
+
 
     private void Awake()
     {
@@ -51,66 +60,23 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetMouseButton(1))
+        if(Input.GetKeyDown(KeyCode.R))
         {
-            timer += Time.deltaTime;
-            if (timer >= 2) timer = 2;
-
-            if(timer < 2 && slowMotion == null)
-            {
-                slowMotion = StartCoroutine(SlowMotion(0.5f, 3, 1, 1));
-            }
-            if(timer >= 2 && slowMotion!=null)
-            {
-                StopCoroutine(slowMotion);
-                StartCoroutine(SlowMotion(1, 3, 1, 1));
-                slowMotion = null;
-            }
-        }
-        else
-        {
-            timer -= Time.deltaTime;
-            if (timer < 0) timer = 0;
-
-            print(timer);
-        }
-        if(Input.GetMouseButtonUp(1))
-        {
-            if(timer < 2)
-            {
-                if(slowMotion != null)
-                {
-                    StopCoroutine(slowMotion);
-                    StartCoroutine(SlowMotion(1, 3, 1, 1));
-                }
-                slowMotion = null;
-            }
-            
+            Time.timeScale = 1;
+            SceneManager.LoadScene(0);
         }
     }
-    private IEnumerator SlowMotion(float targetSpeed, float duration, float easeInSpeed, float easeOutSpeed)
+
+    public List<ChunkProfile> ShuffleLevels(List<ChunkProfile> levelList) //FisherYates Shuffle
     {
-        slowMoTimer = 0;
-        while (Time.timeScale > targetSpeed)
+        int n = levelList.Count;
+        for (int i = 0; i < (n - 1); i++)
         {
-            slowMoTimer += Time.fixedDeltaTime * easeInSpeed;
-            Time.timeScale = Mathf.Lerp(Time.timeScale, targetSpeed, slowMoTimer);
-            yield return new WaitForEndOfFrame();
+            int r = i + Random.Range(0, n - i);
+            ChunkProfile t = levelList[r];
+            levelList[r] = levelList[i];
+            levelList[i] = t;
         }
-
-        Time.timeScale = targetSpeed;
-
-        /*yield return new WaitForSecondsRealtime(duration);
-
-        slowMoTimer = 0;
-        while (Time.timeScale <= 1)
-        {
-            slowMoTimer += Time.fixedDeltaTime * easeOutSpeed;
-            Time.timeScale = Mathf.Lerp(Time.timeScale, 1, slowMoTimer);
-            yield return new WaitForEndOfFrame();
-        }
-
-        slowMoTimer = 0;
-        Time.timeScale = 1; */
+        return levelList;
     }
 }

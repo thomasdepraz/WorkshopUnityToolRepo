@@ -11,18 +11,13 @@ public class ObjectPool : MonoBehaviour
 
     public void Start()
     {
-        for (int i = 0; i < pool.Count; i++)
-        {
-            Instantiate(pool[i],self);
-        }
+
     }
 
     public GameObject GetFreeElement()
     {
-        print($"Getting in {name}");
         for (int i = 0; i < pool.Count; i++)
         {
-            UnityEditor.EditorGUIUtility.PingObject(pool[i]);
             if (!pool[i].activeSelf)
             {
                 return pool[i];

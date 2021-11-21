@@ -27,6 +27,7 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameManager.Instance.ShuffleLevels(chunkPool); 
         LoadLevel(chunkPool[0]);
     }
 
@@ -38,6 +39,7 @@ public class LevelManager : MonoBehaviour
     public void LoadLevel(ChunkProfile levelProfile)
     {
         GameObject go;
+        StartCoroutine(LockPlayer());
         for (int i = 0; i < levelProfile.tiles.Length; i++)
         {
             int y = (int)Mathf.Floor(i / 17);
@@ -76,8 +78,11 @@ public class LevelManager : MonoBehaviour
     public void LoadNextLevel()
     {
         ClearLevel();
-        if (currentLevelIndex >= chunkPool.Count -1)
+        if (currentLevelIndex >= chunkPool.Count - 1)
+        {
+            GameManager.Instance.ShuffleLevels(chunkPool);
             currentLevelIndex = 0;
+        }
         else
             currentLevelIndex++;
 
@@ -90,5 +95,12 @@ public class LevelManager : MonoBehaviour
     {
         enemyPool.ResetPool();
         obstaclePool.ResetPool();
+    }
+
+    IEnumerator LockPlayer()
+    {
+        GameManager.Instance.playerController.canMove = false;
+        yield return new WaitForSeconds(0.5f);
+        GameManager.Instance.playerController.canMove = true;
     }
 }

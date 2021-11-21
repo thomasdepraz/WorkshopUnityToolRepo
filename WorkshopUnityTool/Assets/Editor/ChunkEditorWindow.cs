@@ -79,8 +79,6 @@ public class ChunkEditorWindow : EditorWindow
             }
         }
 
-        EditorGUILayout.PropertyField(tilesProp);
-
         #region Top Disabled GUI
         EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.ObjectField("Current Chunk", currentChunk, typeof(ChunkProfile));

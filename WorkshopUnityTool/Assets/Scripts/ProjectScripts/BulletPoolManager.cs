@@ -11,6 +11,7 @@ public class BulletPoolManager : MonoBehaviour
     public ParticleSystem destroyParticle;
 
     // Start is called before the first frame update
+    [HideInInspector]public int usedObjectsCount;
     void Start()
     {
         //init particles on bullets
@@ -43,4 +44,26 @@ public class BulletPoolManager : MonoBehaviour
         b.destroyParticle = destroyParticle;
         return b;
     }
+
+#if UNITY_EDITOR
+    int cache;
+
+    public void CountActive()
+    {
+        cache = 0;
+        for (int i = 0; i < bullets.Count; i++)
+        {
+            if (bullets[i].gameObject.activeSelf)
+            {
+                cache++;
+            }
+        }
+        usedObjectsCount = cache;
+    }
+
+    private void Update()
+    {
+        CountActive();
+    }
+#endif
 }

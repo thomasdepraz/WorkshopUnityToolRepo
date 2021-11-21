@@ -39,7 +39,6 @@ public class LevelManagerInspector : Editor
         }
 
 
-        //base.OnInspectorGUI();
         serializedObject.Update();
 
         GUILayout.Space(10);
@@ -93,8 +92,8 @@ public class LevelManagerInspector : Editor
                 }
 
             enemyQuantity = EditorGUILayout.IntField("Quantity", enemyQuantity);
-            if (obstacleQuantity < 0)
-                obstacleQuantity = 0;
+            if (enemyQuantity < 0)
+                enemyQuantity = 0;
             EditorGUILayout.EndHorizontal();
 
 
